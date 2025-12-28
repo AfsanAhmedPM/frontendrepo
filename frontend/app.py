@@ -7,11 +7,16 @@ import html
 BACKEND_URL = "https://inbox-intelligence.onrender.com"
 st.set_page_config(page_title="Inbox Command Center", page_icon="⚡", layout="wide")
 
-# --- AUTH & API HELPERS (The "Brains") ---
+# --- AUTH & API HELPERS (PERSISTENT LOGIC) ---
+
+# 1. PERSISTENCE: Check URL for token -> Save to Session
 if "token" in st.query_params:
     st.session_state["auth_token"] = st.query_params["token"]
-    st.query_params.clear()
-    st.rerun()
+
+# 2. REVERSE PERSISTENCE: If logged in, FORCE token into URL
+# (This ensures if you refresh, the token is still there)
+if "auth_token" in st.session_state:
+    st.query_params["token"] = st.session_state["auth_token"]
 
 def api_get(endpoint):
     token = st.session_state.get("auth_token")
@@ -65,6 +70,8 @@ with st.sidebar:
         else:
             if st.button("🚪 Logout", use_container_width=True):
                 del st.session_state["auth_token"]
+                # Clear token from URL on logout
+                st.query_params.clear() 
                 if "data" in st.session_state: del st.session_state["data"]
                 st.rerun()
 
