@@ -3,7 +3,7 @@ import requests
 import html
 
 # --- CONFIGURATION ---
-BACKEND_URL = "https://inboxintelligence.onrender.com"
+BACKEND_URL = "https://inbox-intelligence.onrender.com"
 st.set_page_config(page_title="Inbox Command Center", page_icon="⚡", layout="wide")
 
 # --- CUSTOM CSS ---
