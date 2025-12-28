@@ -18,8 +18,7 @@ with st.sidebar:
     st.title("⚡ Command Center")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🔐 Login", use_container_width=True):
-            st.markdown(f'<meta http-equiv="refresh" content="0;url={BACKEND_URL}/auth/login">', unsafe_allow_html=True)
+        st.link_button("🔐 Login", f"{BACKEND_URL}/auth/login", type="primary", use_container_width=True)
     with col2:
         if st.button("🔄 Sync", use_container_width=True):
             with st.spinner("Syncing..."):
