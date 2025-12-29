@@ -111,7 +111,7 @@ def show_landing_page():
     with c1:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 0.5s;">
-            <h3> AI Sorting</h3>
+            <h3>  AI Sorting</h3>
             <p>Automatically separates Job Offers from Spam.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -119,7 +119,7 @@ def show_landing_page():
     with c2:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.0s;">
-            <h3> Ghostwriter</h3>
+            <h3>  Ghostwriter</h3>
             <p>Draft professional replies in seconds.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -127,7 +127,7 @@ def show_landing_page():
     with c3:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.5s;">
-            <h3> One-Click Clean</h3>
+            <h3>  One-Click Clean</h3>
             <p>Delete junk instantly without opening it.</p>
         </div>
         """, unsafe_allow_html=True)
