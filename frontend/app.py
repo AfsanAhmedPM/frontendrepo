@@ -61,12 +61,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- AUTH & API HELPERS ---
+# --- AUTH & API HELPERS (FIXED) ---
+# 1. If we see a token in URL (coming back from Google), we save it AND skip landing page
 if "token" in st.query_params:
     st.session_state["auth_token"] = st.query_params["token"]
+    st.session_state["enter_app"] = True # <--- FORCE DASHBOARD ON LOGIN
 
+# 2. If we already have a token in memory, ensure URL matches
 if "auth_token" in st.session_state:
     st.query_params["token"] = st.session_state["auth_token"]
+    st.session_state["enter_app"] = True # <--- KEEP DASHBOARD OPEN
 
 def api_get(endpoint):
     token = st.session_state.get("auth_token")
@@ -152,6 +156,8 @@ def show_main_app():
                     del st.session_state["auth_token"]
                     st.query_params.clear()
                     if "data" in st.session_state: del st.session_state["data"]
+                    # Reset enter_app so they go back to landing page on logout
+                    if "enter_app" in st.session_state: del st.session_state["enter_app"]
                     st.rerun()
         with col2:
             refresh_clicked = st.button("Sync", use_container_width=True)
@@ -171,7 +177,7 @@ def show_main_app():
                         st.error("Sync Failed.")
 
         st.markdown("---")
-        st.markdown("### Filter")
+        st.markdown("Filter")
         search_query = st.text_input("Search", placeholder="Sender or Subject...", label_visibility="collapsed")
         st.markdown("---")
         if "auth_token" in st.session_state:
@@ -183,6 +189,7 @@ def show_main_app():
     if "data" not in st.session_state:
         st.markdown("## Ready to work?")
         st.info("Connect your Gmail account on the left to activate the Command Center.")
+        st.info("After logging in, please wait a few seconds while we get things ready.")
     else:
         categories = st.session_state["data"]
         
@@ -201,7 +208,7 @@ def show_main_app():
         
         st.divider()
 
-        # TABS - Note: We keep emojis in backend keys as they match the DB, but remove them from display labels
+        # TABS
         tabs = st.tabs(["Action Required", "Applications", "University", "Promotions"])
         backend_keys = ["🚨 Action Required", "⏳ Applications & Updates", "🎓 University & Learning", "🗑️ Promotions & Noise"]
 
@@ -222,7 +229,6 @@ def show_main_app():
                     msg_id = mail.get("id", "")
                     
                     count_str = f"({count})" if count > 1 else ""
-                    # Removed icon variable and logic
                     header_text = f"{sender} {count_str} | {sub}"
                     unique_suffix = f"{msg_id}_{key}"
                     
@@ -277,7 +283,8 @@ def show_main_app():
     st.markdown('</div>', unsafe_allow_html=True) # Close Main Wrapper
 
 # --- CONTROL FLOW ---
-if "enter_app" not in st.session_state:
-    show_landing_page()
-else:
+# Logic: If 'enter_app' is True OR 'auth_token' is present, show Main App.
+if "enter_app" in st.session_state or "auth_token" in st.session_state:
     show_main_app()
+else:
+    show_landing_page()
