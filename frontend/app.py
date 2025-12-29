@@ -1,18 +1,17 @@
 import streamlit as st
 import requests
 import html
-import time
 
 # --- CONFIGURATION ---
 BACKEND_URL = "https://inbox-intelligence.onrender.com"
 st.set_page_config(page_title="Inbox Intelligence", page_icon="⚡", layout="wide")
 
-# --- ANIMATION & CSS ---
+# --- CUSTOM CSS ---
 st.markdown("""
     <style>
     .stApp { background-color: #0E1117; }
     
-    /* 1. Global Fade In (Runs whenever page loads) */
+    /* 1. Global Fade In */
     @keyframes fadeIn {
         0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -23,63 +22,40 @@ st.markdown("""
     }
 
     /* 2. Landing Page Styles */
-    .landing-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding-top: 5vh;
-    }
-    
     .landing-title { 
-        font-size: 3.5em; 
-        font-weight: 800; 
-        background: -webkit-linear-gradient(45deg, #ffffff, #a1a1aa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 10px;
-        text-align: center;
+        font-size: 3em; 
+        font-weight: 700; 
+        color: #fff; 
+        text-align: center; 
+        margin-bottom: 0px;
         animation: fadeIn 1s ease-out;
     }
-    
-    /* 3. Text Shimmer Animation for the Subtitle */
-    @keyframes shimmer {
-        0% { background-position: -200% center; opacity: 0; }
-        100% { background-position: 200% center; opacity: 1; }
+
+    /* 3. SEQUENTIAL TEXT REVEAL ANIMATION */
+    @keyframes smoothReveal {
+        0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
     }
-    
+
     .landing-subtitle { 
         font-size: 1.5em; 
-        font-weight: 400;
+        color: #aaa; 
         text-align: center; 
-        margin-bottom: 40px;
-        background: linear-gradient(90deg, #666, #fff, #666);
-        background-size: 200% auto;
-        color: #fff;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shimmer 3s linear infinite; /* Keeps it alive */
+        margin-bottom: 30px; 
+    }
+    
+    /* This class keeps text hidden until animation starts */
+    .word-reveal {
+        opacity: 0; 
+        display: inline-block;
+        animation: smoothReveal 1s ease-out forwards;
+        margin-right: 6px; /* Space between phrases */
     }
 
-    /* 4. Feature Cards Hover Effect */
-    .feature-card { 
-        background-color: #161b22; 
-        padding: 25px; 
-        border-radius: 12px; 
-        border: 1px solid #30363d; 
-        text-align: center; 
-        transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-    .feature-card:hover {
-        transform: translateY(-5px);
-        border-color: #58a6ff;
-    }
-    .feature-icon { font-size: 2em; margin-bottom: 10px; display: block; }
-    .feature-title { font-size: 1.1em; font-weight: bold; color: white; margin-bottom: 5px; }
-    .feature-desc { color: #8b949e; font-size: 0.9em; }
-
-    /* Dashboard Tweaks */
+    /* 4. Feature Cards */
+    .feature-card { background-color: #1E1E1E; padding: 20px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+    
+    /* Dashboard Styles */
     div[data-testid="stMetric"] { background-color: #262730; border: 1px solid #444; padding: 10px; border-radius: 8px; }
     .streamlit-expanderHeader { background-color: #1E1E1E !important; border: 1px solid #333 !important; border-radius: 4px !important; color: white !important; }
     </style>
@@ -106,66 +82,63 @@ def api_post(endpoint, payload):
 
 # --- PART 1: THE LANDING PAGE 🛬 ---
 def show_landing_page():
-    # We wrap everything in a div with animation class
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
+    # Spacer
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
-    st.markdown('<div class="landing-container">', unsafe_allow_html=True)
-    
-    # Title
+    # Hero Title
     st.markdown('<div class="landing-title">⚡ Inbox Intelligence</div>', unsafe_allow_html=True)
     
-    # Animated Subtitle
-    st.markdown(
-        '<div class="landing-subtitle">Never miss job, interview, or placement emails.</div>', 
-        unsafe_allow_html=True
-    )
+    # ✅ SEQUENTIAL SUBTITLE ANIMATION
+    # We use <span> tags with specific animation-delays to make them appear one by one.
+    st.markdown("""
+        <div class="landing-subtitle">
+            <span class="word-reveal" style="animation-delay: 0.3s;">Never miss job,</span>
+            <span class="word-reveal" style="animation-delay: 1.3s;">interview, or</span>
+            <span class="word-reveal" style="animation-delay: 2.3s;">placement emails.</span>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Button (Streamlit buttons can't be fully CSS styled easily, so we rely on container width)
+    # Center Button
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
         if st.button("🚀 Enter Command Center", use_container_width=True, type="primary"):
             st.session_state["enter_app"] = True
             st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True) # End container
-
-    # Features
+    # Features Grid
     st.markdown("<br><br>", unsafe_allow_html=True)
-    
-    # Use HTML for cards to allow Hover Effects
     c1, c2, c3 = st.columns(3)
+    
     with c1:
         st.markdown("""
-        <div class="feature-card main-content" style="animation-delay: 0.2s;">
-            <span class="feature-icon">🤖</span>
-            <div class="feature-title">AI Sorting</div>
-            <div class="feature-desc">Separates Job Offers from Spam automatically.</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with c2:
-        st.markdown("""
-        <div class="feature-card main-content" style="animation-delay: 0.4s;">
-            <span class="feature-icon">✍️</span>
-            <div class="feature-title">Ghostwriter</div>
-            <div class="feature-desc">Draft professional replies in seconds.</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with c3:
-        st.markdown("""
-        <div class="feature-card main-content" style="animation-delay: 0.6s;">
-            <span class="feature-icon">🗑️</span>
-            <div class="feature-title">Fast Clean</div>
-            <div class="feature-desc">Delete junk instantly without opening it.</div>
+        <div class="feature-card main-content" style="animation-delay: 0.5s;">
+            <h3>🤖 AI Sorting</h3>
+            <p>Automatically separates Job Offers from Spam.</p>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True) # Close Main Wrapper
+    with c2:
+        st.markdown("""
+        <div class="feature-card main-content" style="animation-delay: 1.0s;">
+            <h3>✍️ Ghostwriter</h3>
+            <p>Draft professional replies in seconds.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with c3:
+        st.markdown("""
+        <div class="feature-card main-content" style="animation-delay: 1.5s;">
+            <h3>🗑️ One-Click Clean</h3>
+            <p>Delete junk instantly without opening it.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 # --- PART 2: THE MAIN DASHBOARD 💻 ---
 def show_main_app():
-    # Wrap Dashboard in Animation too
+    # Wrap dashboard in fade-in animation
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
-
+    
+    # SIDEBAR
     with st.sidebar:
         st.title("⚡ Command Center")
         st.caption("v3.0 • AI-Powered Triage")
@@ -207,12 +180,14 @@ def show_main_app():
         else:
             st.info("🟡 Waiting for Login")
 
+    # MAIN CONTENT
     if "data" not in st.session_state:
         st.markdown("## 👋 Ready to work?")
         st.info("Connect your Gmail account on the left to activate the Command Center.")
     else:
         categories = st.session_state["data"]
         
+        # METRICS
         c_urgent = len(categories.get("🚨 Action Required", []))
         c_apps = len(categories.get("⏳ Applications & Updates", []))
         c_uni = len(categories.get("🎓 University & Learning", []))
@@ -227,6 +202,7 @@ def show_main_app():
         
         st.divider()
 
+        # TABS
         tabs = st.tabs(["🚨 Action Required", "⏳ Applications", "🎓 University", "🗑️ Promotions"])
         backend_keys = ["🚨 Action Required", "⏳ Applications & Updates", "🎓 University & Learning", "🗑️ Promotions & Noise"]
 
@@ -263,6 +239,7 @@ def show_main_app():
                         
                         st.divider()
                         
+                        # AI SECRETARY
                         user_intent = st.text_input("How should we reply?", placeholder="e.g. Accept offer...", key=f"intent_{unique_suffix}")
                         
                         if st.button("✨ Draft Reply", key=f"gen_{unique_suffix}"):
@@ -301,8 +278,8 @@ def show_main_app():
                                 st.rerun()
                         with c2:
                             st.link_button("↗ Open Gmail", f"https://mail.google.com/mail/u/0/#inbox/{msg_id}")
-    
-    st.markdown('</div>', unsafe_allow_html=True) # Close Wrapper
+
+    st.markdown('</div>', unsafe_allow_html=True) # Close Main Wrapper
 
 # --- CONTROL FLOW ---
 if "enter_app" not in st.session_state:
