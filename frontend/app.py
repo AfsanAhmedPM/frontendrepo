@@ -4,7 +4,7 @@ import html
 
 # --- CONFIGURATION ---
 BACKEND_URL = "https://inbox-intelligence.onrender.com"
-st.set_page_config(page_title="Inbox Intelligence", layout="wide")
+st.set_page_config(page_title="Inbox Intelligence", page_icon="", layout="wide")
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
@@ -100,7 +100,7 @@ def show_landing_page():
     # Center Button
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        if st.button("🚀 Enter Command Center", use_container_width=True, type="primary"):
+        if st.button("Enter Command Center", use_container_width=True, type="primary"):
             st.session_state["enter_app"] = True
             st.rerun()
 
@@ -111,7 +111,7 @@ def show_landing_page():
     with c1:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 0.5s;">
-            <h3>🤖 AI Sorting</h3>
+            <h3> AI Sorting</h3>
             <p>Automatically separates Job Offers from Spam.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -119,7 +119,7 @@ def show_landing_page():
     with c2:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.0s;">
-            <h3>✍️ Ghostwriter</h3>
+            <h3> Ghostwriter</h3>
             <p>Draft professional replies in seconds.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -127,7 +127,7 @@ def show_landing_page():
     with c3:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.5s;">
-            <h3>🗑️ One-Click Clean</h3>
+            <h3> One-Click Clean</h3>
             <p>Delete junk instantly without opening it.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -181,7 +181,7 @@ def show_main_app():
 
     # MAIN CONTENT
     if "data" not in st.session_state:
-        st.markdown("## 👋 Ready to work?")
+        st.markdown("##  Ready to work?")
         st.info("Connect your Gmail account on the left to activate the Command Center.")
     else:
         categories = st.session_state["data"]
