@@ -150,7 +150,7 @@ def show_main_app():
         col1, col2 = st.columns(2)
         with col1:
             if "auth_token" not in st.session_state:
-                st.link_button("Login", f"{BACKEND_URL}/auth/login", type="primary", use_container_width=True)
+                st.link_button("𝐆 Login", f"{BACKEND_URL}/auth/login", type="primary", use_container_width=True)
             else:
                 if st.button("Logout", use_container_width=True):
                     del st.session_state["auth_token"]
