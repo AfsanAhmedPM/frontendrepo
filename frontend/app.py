@@ -4,7 +4,8 @@ import html
 
 # --- CONFIGURATION ---
 BACKEND_URL = "https://inbox-intelligence.onrender.com"
-st.set_page_config(page_title="Inbox Intelligence", page_icon="", layout="wide")
+st.set_page_config(page_title="Inbox Intelligence", layout="wide")
+
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
@@ -79,16 +80,15 @@ def api_post(endpoint, payload):
     try: return requests.post(f"{BACKEND_URL}{endpoint}", json=payload, headers={"Authorization": f"Bearer {token}"}, timeout=20)
     except: return None
 
-# --- PART 1: THE LANDING PAGE 🛬 ---
+# --- PART 1: THE LANDING PAGE ---
 def show_landing_page():
     # Spacer
     st.markdown("<br><br>", unsafe_allow_html=True)
     
     # Hero Title
-    st.markdown('<div class="landing-title">⚡ Inbox Intelligence</div>', unsafe_allow_html=True)
+    st.markdown('<div class="landing-title">Inbox Intelligence</div>', unsafe_allow_html=True)
     
-    # ✅ SEQUENTIAL SUBTITLE ANIMATION
-    # We use <span> tags with specific animation-delays to make them appear one by one.
+    # SEQUENTIAL SUBTITLE ANIMATION
     st.markdown("""
         <div class="landing-subtitle">
             <span class="word-reveal" style="animation-delay: 0.3s;">Never miss job,</span>
@@ -111,7 +111,7 @@ def show_landing_page():
     with c1:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 0.5s;">
-            <h3>       AI Sorting</h3>
+            <h3>AI Sorting</h3>
             <p>Automatically separates Job Offers from Spam.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -119,7 +119,7 @@ def show_landing_page():
     with c2:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.0s;">
-            <h3>       Ghostwriter</h3>
+            <h3>Ghostwriter</h3>
             <p>Draft professional replies in seconds.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -127,34 +127,34 @@ def show_landing_page():
     with c3:
         st.markdown("""
         <div class="feature-card main-content" style="animation-delay: 1.5s;">
-            <h3>       One-Click Clean</h3>
+            <h3>One-Click Clean</h3>
             <p>Delete junk instantly without opening it.</p>
         </div>
         """, unsafe_allow_html=True)
 
-# --- PART 2: THE MAIN DASHBOARD 💻 ---
+# --- PART 2: THE MAIN DASHBOARD ---
 def show_main_app():
     # Wrap dashboard in fade-in animation
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     
     # SIDEBAR
     with st.sidebar:
-        st.title("⚡ Command Center")
+        st.title("Command Center")
         st.caption("v3.0 • AI-Powered Triage")
         st.markdown("---")
         
         col1, col2 = st.columns(2)
         with col1:
             if "auth_token" not in st.session_state:
-                st.link_button("🔐 Login", f"{BACKEND_URL}/auth/login", type="primary", use_container_width=True)
+                st.link_button("Login", f"{BACKEND_URL}/auth/login", type="primary", use_container_width=True)
             else:
-                if st.button("🚪 Logout", use_container_width=True):
+                if st.button("Logout", use_container_width=True):
                     del st.session_state["auth_token"]
                     st.query_params.clear()
                     if "data" in st.session_state: del st.session_state["data"]
                     st.rerun()
         with col2:
-            refresh_clicked = st.button("🔄 Sync", use_container_width=True)
+            refresh_clicked = st.button("Sync", use_container_width=True)
 
         if refresh_clicked:
             if "auth_token" not in st.session_state:
@@ -165,23 +165,23 @@ def show_main_app():
                     if res and res.status_code == 200:
                         data = res.json()
                         st.session_state["data"] = data.get("categories", {})
-                        st.toast("Inbox successfully synced!", icon="✅")
+                        st.toast("Inbox successfully synced!")
                         st.rerun()
                     else:
                         st.error("Sync Failed.")
 
         st.markdown("---")
-        st.markdown("### 🔍 Filter")
+        st.markdown("### Filter")
         search_query = st.text_input("Search", placeholder="Sender or Subject...", label_visibility="collapsed")
         st.markdown("---")
         if "auth_token" in st.session_state:
-            st.success("🟢 System Online")
+            st.success("System Online")
         else:
-            st.info("🟡 Waiting for Login")
+            st.info("Waiting for Login")
 
     # MAIN CONTENT
     if "data" not in st.session_state:
-        st.markdown("##  Ready to work?")
+        st.markdown("## Ready to work?")
         st.info("Connect your Gmail account on the left to activate the Command Center.")
     else:
         categories = st.session_state["data"]
@@ -192,7 +192,7 @@ def show_main_app():
         c_uni = len(categories.get("🎓 University & Learning", []))
         c_promo = len(categories.get("🗑️ Promotions & Noise", []))
         
-        st.markdown("### 📊 Inbox Health")
+        st.markdown("### Inbox Health")
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Action Items", c_urgent, delta="Do Now", delta_color="inverse")
         m2.metric("Applications", c_apps, delta="Waiting")
@@ -201,8 +201,8 @@ def show_main_app():
         
         st.divider()
 
-        # TABS
-        tabs = st.tabs(["🚨 Action Required", "⏳ Applications", "🎓 University", "🗑️ Promotions"])
+        # TABS - Note: We keep emojis in backend keys as they match the DB, but remove them from display labels
+        tabs = st.tabs(["Action Required", "Applications", "University", "Promotions"])
         backend_keys = ["🚨 Action Required", "⏳ Applications & Updates", "🎓 University & Learning", "🗑️ Promotions & Noise"]
 
         for tab, key in zip(tabs, backend_keys):
@@ -212,7 +212,7 @@ def show_main_app():
                     q = search_query.lower()
                     email_list = [e for e in email_list if q in e['subject'].lower() or q in e['from'].lower()]
 
-                if not email_list: st.success("🎉 Nothing here! You're caught up.")
+                if not email_list: st.success("Nothing here! You're caught up.")
                 
                 for mail in email_list:
                     sub = html.escape(mail.get("subject", "(No Subject)"))
@@ -221,13 +221,9 @@ def show_main_app():
                     count = mail.get("sender_count", 1)
                     msg_id = mail.get("id", "")
                     
-                    if "Action" in key: icon = "🔴"
-                    elif "Applications" in key: icon = "🟠"
-                    elif "University" in key: icon = "🔵"
-                    else: icon = "📓"
-
                     count_str = f"({count})" if count > 1 else ""
-                    header_text = f"{icon} {sender} {count_str} | {sub}"
+                    # Removed icon variable and logic
+                    header_text = f"{sender} {count_str} | {sub}"
                     unique_suffix = f"{msg_id}_{key}"
                     
                     with st.expander(header_text):
@@ -241,7 +237,7 @@ def show_main_app():
                         # AI SECRETARY
                         user_intent = st.text_input("How should we reply?", placeholder="e.g. Accept offer...", key=f"intent_{unique_suffix}")
                         
-                        if st.button("✨ Draft Reply", key=f"gen_{unique_suffix}"):
+                        if st.button("Draft Reply", key=f"gen_{unique_suffix}"):
                             if user_intent:
                                 with st.spinner("AI is writing..."):
                                     res = api_post("/action/generate_reply", {"msg_id": msg_id, "intent": user_intent})
@@ -250,33 +246,33 @@ def show_main_app():
                                         st.rerun()
                                         
                         if f"draft_{msg_id}" in st.session_state:
-                            st.markdown("### 📝 Edit & Send")
+                            st.markdown("### Edit & Send")
                             final_body = st.text_area("Preview:", value=st.session_state[f"draft_{msg_id}"], height=150, key=f"edit_{unique_suffix}")
                             
                             c1, c2 = st.columns([1, 4])
                             with c1:
-                                if st.button("🚀 Send", key=f"snd_{unique_suffix}", type="primary"):
+                                if st.button("Send", key=f"snd_{unique_suffix}", type="primary"):
                                     with st.spinner("Sending..."):
                                         res = api_post("/action/send_custom", {"msg_id": msg_id, "body": final_body})
                                         if res and res.status_code == 200:
-                                            st.toast("Sent! 🚀", icon="✅")
+                                            st.toast("Sent!", icon=None)
                                             del st.session_state[f"draft_{msg_id}"]
                                             st.rerun()
                                         else: st.error("Failed.")
                             with c2:
-                                if st.button("❌ Discard", key=f"dsc_{unique_suffix}"):
+                                if st.button("Discard", key=f"dsc_{unique_suffix}"):
                                     del st.session_state[f"draft_{msg_id}"]
                                     st.rerun()
                         
                         st.divider()
                         c1, c2 = st.columns([1, 4])
                         with c1:
-                            if st.button("🗑️ Trash", key=f"tr_{unique_suffix}"):
+                            if st.button("Trash", key=f"tr_{unique_suffix}"):
                                 api_get(f"/action/trash/{msg_id}")
-                                st.toast("Deleted!", icon="🗑️")
+                                st.toast("Deleted!", icon=None)
                                 st.rerun()
                         with c2:
-                            st.link_button("↗ Open Gmail", f"https://mail.google.com/mail/u/0/#inbox/{msg_id}")
+                            st.link_button("Open Gmail", f"https://mail.google.com/mail/u/0/#inbox/{msg_id}")
 
     st.markdown('</div>', unsafe_allow_html=True) # Close Main Wrapper
 
