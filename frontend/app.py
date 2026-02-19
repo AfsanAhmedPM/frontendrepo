@@ -3,7 +3,7 @@ import requests
 import html
 
 # --- CONFIGURATION ---
-BACKEND_URL = "https://inbox-intelligence.onrender.com"
+BACKEND_URL = "https://inboxintelligence-hwb1.onrender.com"
 st.set_page_config(page_title="Inbox Intelligence", layout="wide")
 
 # --- CUSTOM CSS ---
