@@ -194,10 +194,10 @@ def show_main_app():
         categories = st.session_state["data"]
         
         # METRICS
-        c_urgent = len(categories.get("🚨 Action Required", []))
-        c_apps = len(categories.get("⏳ Applications & Updates", []))
-        c_uni = len(categories.get("🎓 University & Learning", []))
-        c_promo = len(categories.get("🗑️ Promotions & Noise", []))
+        c_urgent = len(categories.get("Action Items", []))
+        c_apps = len(categories.get("Applications", []))
+        c_uni = len(categories.get("University", []))
+        c_promo = len(categories.get("Promotions", []))
         
         st.markdown("### Inbox Health")
         m1, m2, m3, m4 = st.columns(4)
@@ -210,7 +210,7 @@ def show_main_app():
 
         # TABS
         tabs = st.tabs(["Action Required", "Applications", "University", "Promotions"])
-        backend_keys = ["🚨 Action Required", "⏳ Applications & Updates", "🎓 University & Learning", "🗑️ Promotions & Noise"]
+        backend_keys = ["Action Items", "Applications", "University", "Promotions"]
 
         for tab, key in zip(tabs, backend_keys):
             with tab:
